@@ -1,0 +1,59 @@
+version: '2.1'
+
+# @todo move to version 3
+# @todo use networks
+
+services:
+
+#  cli:
+#    build:
+#      context: ./images/cli
+#      dockerfile: Dockerfile
+#    hostname: weather_cli
+#    container_name: weather_cli
+#    volumes:
+#      - ../app:/var/www/app/
+
+  web:
+    build:
+      context: ./images/app
+      dockerfile: Dockerfile
+    restart: always
+    hostname: weather_api
+    container_name: weather_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../app:/var/www/app/
+    env_file:
+      - .env
+    depends_on:
+      - memcached
+
+# @todo use nginx
+#  web:
+#    build:
+#      context: ./images/nginx
+#      dockerfile: Dockerfile
+#    volumes:
+#     - ./config/nginx/weather-app.template:/etc/nginx/conf.d/weather-app.template
+#     - ../app:/var/www/app
+#    ports:
+#     - "8000:80"
+#    environment:
+#     - NGINX_HOST=0.0.0.0
+#     - NGINX_PORT=80
+#    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+#    depends_on:
+#      - memcached
+
+  memcached:
+    image: memcached:1.5.16-alpine
+    ports:
+      - "11211:11211"
+    restart: always
+
+
+volumes:
+  backup:
+    external: false

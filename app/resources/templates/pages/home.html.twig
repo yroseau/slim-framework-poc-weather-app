@@ -1,0 +1,115 @@
+{% extends "index.html.twig" %}
+
+{% block title %}{{ parent() }} - Home{% endblock %}
+
+{% block content %}
+
+    {#  @todo move in css #}
+    <style>
+        .temp {
+            font-size: 64px;
+            margin-left: 16px;
+        }
+
+        .temp sup {
+            font-size: 0.5em;
+        }
+
+        .weather-ico {
+            font-size: 64px;
+            margin: 0.25em;
+        }
+
+        .city {
+            font-weight: bold;
+        }
+
+        .country {
+            font-size: 0.8em;
+            font-weight: normal;
+        }
+
+        .country:before {
+            content: "•";
+            margin: 0 0.5em;
+        }
+
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+        }
+
+        .center-container > div {
+            margin: auto;
+            text-align: center;
+        }
+
+        .no-card {
+            padding-top: 5em;
+            font-size: 1.2em;
+        }
+
+        .no-card > * {
+            margin: 30px;
+        }
+
+        .no-card .title {
+            font-weight: bold;
+        }
+
+        .no-card .ico i {
+            font-size: 64px;
+        }
+
+        .country:empty {
+            display: none;
+        }
+
+        .card-content {
+            margin-top: 10%;
+        }
+    </style>
+
+    {% if cards|length == 0 %}
+
+        <div class="center-container">
+            <div class="no-card">
+                <div class="ico">
+                    <i class="material-icons">sentiment_very_dissatisfied</i>
+                </div>
+                <div class="title">You don't have card.</div>
+                <div class="info">Add them on the <a href="/settings"> settings page </a>.</div>
+            </div>
+        </div>
+
+    {% else %}
+
+        <div id="weatherCards" class="mdl-grid">
+            {% for card in cards %}
+
+                <div class="demo-card-wide mdl-card mdl-cell mdl-cell--3-col mdl-shadow--2dp">
+                    {#<div class="mdl-card__title"></div>#}
+                    <div class="mdl-card__supporting-text card-content">
+                        <i id="weather-icon-{{ loop.index0 }}" class="wi weather-ico {{ card.weatherIcon }}"></i><span class="temp">{{ card.temperature|number_format(1) }}{# @todo local format: decimal separator #}
+                            <sup>{{ card.temperatureUnit }}</sup></span>
+                        <div class="mdl-tooltip" data-mdl-for="weather-icon-{{ loop.index0 }}">
+                            {{ card.weatherDescription }}
+                        </div>
+                    </div>
+                    <div class="mdl-card__actions mdl-card--border">
+                        <span class="city mdl-card__supporting-text">
+                            {{ card.city.name }}
+                            <span class="country">{{ card.country.name }}</span>
+                        </span>
+                    </div>
+                    {#<div class="mdl-card__menu"></div>#}
+                </div>
+
+            {% endfor %}
+        </div>
+
+    {% endif %}
+
+{% endblock %}

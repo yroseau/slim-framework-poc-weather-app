@@ -1,0 +1,17 @@
+routes:
+
+  home:
+    path: /
+    method: GET
+    controller: WeatherApp\Controllers\Front\HomeController
+
+  settings:
+    path: /settings
+    method: GET
+    controller: WeatherApp\Controllers\Front\SettingsController
+
+  api_weather_city:
+    path: /api/weather/{countryCode}/{city}[/{units}]
+    method: GET
+    controller: WeatherApp\Controllers\Api\ApiController
+    action: getCityWeatherAction

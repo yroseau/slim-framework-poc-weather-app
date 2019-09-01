@@ -1,0 +1,232 @@
+{% extends "index.html.twig" %}
+
+{% block title %}{{ parent() }} - Settings{% endblock %}
+
+{% block content %}
+
+    {# @todo move in header #}
+    {# @see https://github.com/SortableJS/Sortable#}
+    <script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
+
+    {# @todo move in scss file #}
+    <style>
+        .remove-card {
+            position: absolute;
+            right: 1em;
+            cursor: pointer;
+        }
+        .remove-card:hover {
+            color: #490b12;
+        }
+        .template .card-content {
+            display: none;
+        }
+        .template {
+            position: relative;
+            cursor: pointer;
+        }
+        .template:before {
+            content: "+";
+            font-family: "Times New Roman", sans-serif;
+            font-size: 2em;
+            position: absolute;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            left: 50%;
+            border-color: white;
+            padding: 0;
+            transition: font-size .3s, border .3s, padding .3s;
+        }
+        .template:hover:before {
+            font-size: 2.5em;
+            border: 1px solid #e9e9e9;
+            padding: 0.5em;
+            border-radius: 50%;
+        }
+    </style>
+
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--12-col">
+            <h2 class="mdl-layout-title">Settings</h2>
+        </div>
+
+        <div class="mdl-cell mdl-cell--12-col">
+            Default units:
+            <select id="default-units" name="units">
+                {# @todo use Units enum #}
+                <option value="standard" {% if settings.options and settings.options.units == 'standard' %}selected{% endif %}>Standard</option>
+                <option value="metric" {% if settings.options and settings.options.units == 'metric' %}selected{% endif %}>Metric</option>
+                <option value="imperial" {% if settings.options and settings.options.units == 'imperial' %}selected{% endif %}>Imperial</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="sortable-settings" class="mdl-grid">
+        {% if settings.cards %}
+            {% for card in settings.cards %}
+
+                <div class="mdl-card mdl-cell mdl-cell--3-col mdl-shadow--2dp card">
+                    <div class="mdl-card__supporting-text card-content">
+                        <span class="remove-card" title="remove">x</span>
+                        <form action="#">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input cityName" type="text" name="cityName" value="{{ card.city }}">
+                                <label class="mdl-textfield__label" for="cityName">City...</label>
+                            </div>
+                            <br>
+                            {# @todo add country #}
+                            {#            Country:#}
+                            {#            <div class="country"></div>#}
+                            {#            <select name="countryCode">#}
+                            {#                <option value=""></option>#}
+                            {#                <option value="fr">France</option>#}
+                            {#            </select>#}
+                            {#            <br>#}
+                            Units:
+                            <select class="units" name="units">
+                                <option value="">Default</option>
+                                {# @todo use Units enum #}
+                                <option value="standard" {% if card.units == 'standasrd' %}selected{% endif %}>Standard</option>
+                                <option value="metric" {% if card.units == 'metric' %}selected{% endif %}>Metric</option>
+                                <option value="imperial" {% if card.units == 'imperial' %}selected{% endif %}>Imperial</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+            {% endfor %}
+        {% endif %}
+
+        <div class="demo-card-wide mdl-card mdl-cell mdl-cell--3-col mdl-shadow--2dp card template">
+            <div class="mdl-card__supporting-text card-content">
+                <span class="remove-card" title="remove">✗</span>
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input cityName" type="text" name="cityName" value="{{ card.city }}">
+                        <label class="mdl-textfield__label" for="cityName">City...</label>
+                    </div>
+                    <br>
+                    Units:
+                    <select class="units" name="units">
+                        <option value="">Default</option>
+                        {# @todo use Units enum #}
+                        <option value="standard">Standard</option>
+                        <option value="metric">Metric</option>
+                        <option value="imperial">Imperial</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast" class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+    </div>
+
+    {# @todo move in js file + compile and minify with webpack (babel + uglify) #}
+    {# comment faire, plus crade et moins documenté.. j'ai pas réussi :troll: #}
+    <script>
+
+        var template = document.querySelector('.template');
+        template.addEventListener('click', function(event) {
+            var newCard = template.cloneNode(true);
+            newCard.classList.remove('template');
+            newCard.getElementsByClassName('remove-card')[0].addEventListener('click', removeCard);
+            newCard.getElementsByClassName('cityName')[0].addEventListener('change', save);
+            newCard.getElementsByClassName('cityName')[0].addEventListener('input', save);
+            newCard.getElementsByClassName('cityName')[0].addEventListener('blur', save);
+            newCard.getElementsByClassName('units')[0].addEventListener('change', save);
+            template.parentNode.insertBefore(newCard, template);
+        });
+
+        function removeCard (event) {
+            var card = event.target.closest(".card");
+            card.parentNode.removeChild(card);
+            save();
+        }
+
+        var removeButtons = document.querySelectorAll('.remove-card');
+        removeButtons.forEach(function(button) {
+            button.addEventListener('click', removeCard);
+        });
+
+        var cities = document.querySelectorAll('.cityName');
+        cities.forEach(function(button) {
+            button.addEventListener('change', save);
+            button.addEventListener('input', save);
+            button.addEventListener('blur', save);
+        });
+
+        var units = document.querySelectorAll('.units');
+        units.forEach(function(button) {
+            button.addEventListener('change', save);
+        });
+
+        var defaultUnits = document.querySelector('#default-units');
+        defaultUnits.addEventListener('change', save);
+
+        var snackbarContainer = document.querySelector('#toast');
+        var saveTimeout = null;
+        function save() {
+            if (saveTimeout !== null) {
+                clearTimeout(saveTimeout);
+            }
+            saveTimeout = setTimeout(function() {
+                saveTimeout = null;
+                var snackbarContainer = document.querySelector('#toast');
+                var cards = document.querySelectorAll('.card:not(.template)');
+                var settings = {"options": { "units": defaultUnits.options[defaultUnits.selectedIndex].value }, "cards": []};
+                cards.forEach(function(card){
+                    var unitsElement = card.getElementsByClassName('units')[0];
+                    var units = unitsElement.options[unitsElement.selectedIndex].value;
+                    var city = card.getElementsByClassName('cityName')[0].value;
+                    if (city === '') {
+                        return;
+                    }
+                    settings.cards.push({
+                        city: city,
+                        units: units !== '' ? units : null,
+                    })
+                });
+                settings = JSON.stringify(settings);
+                if (currentSettings === settings) {
+                    return;
+                }
+                currentSettings = settings;
+                document.cookie = "settings" + "=" + settings + "; path=/";
+                snackbarContainer.MaterialSnackbar.showSnackbar({
+                    message: 'Saved !',
+                    timeout: 2000,
+                });
+            }, 2000);
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        var currentSettings = getCookie("settings");
+
+        var sortableSettings = document.querySelector('#sortable-settings');
+        Sortable.create(sortableSettings, {
+            'onEnd': save,
+        });
+
+        {# @todo load settings page with javascript #}
+    </script>
+
+{% endblock %}
