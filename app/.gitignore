@@ -1,2 +1,4 @@
 vendor/
 resources/templates/.cache/
+public/css/weather-icons.min.css
+public/font/weathericons*

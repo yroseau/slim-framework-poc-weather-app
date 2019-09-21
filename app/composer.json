@@ -5,6 +5,28 @@
         "slim/psr7": "^0.5.0",
         "guzzlehttp/psr7": "^1.6",
         "slim/twig-view": "^2.5",
-        "php-di/php-di": "^6.0"
-    }
+        "php-di/php-di": "^6.0",
+        "erikflowers/weather-icon": "^2.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "cp vendor/erikflowers/weather-icon/css/weather-icons.min.css public/css/weather-icons.min.css",
+            "cp vendor/erikflowers/weather-icon/font/* public/font"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "erikflowers/weather-icon",
+                "version": "2.0.10",
+                "type": "package",
+                "source": {
+                    "type": "git",
+                    "reference": "2.0.10",
+                    "url": "https://github.com/erikflowers/weather-icons.git"
+                }
+            }
+        }
+    ]
 }

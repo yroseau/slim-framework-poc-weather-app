@@ -4,8 +4,18 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "66b55b8f2c4158f1c4ab0389f6a59878",
+    "content-hash": "a37d81c6185888f89a7efbab7b369ce2",
     "packages": [
+        {
+            "name": "erikflowers/weather-icon",
+            "version": "2.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erikflowers/weather-icons.git",
+                "reference": "2.0.10"
+            },
+            "type": "package"
+        },
         {
             "name": "fig/http-message-util",
             "version": "1.1.3",
