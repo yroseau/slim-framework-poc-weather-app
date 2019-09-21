@@ -24,6 +24,11 @@ Go to http://localhost:8000/
 
 ## Use api
 
+
+```
+http://localhost:8000/api/weather/{ISO-3166-country-codes}/{city-name}[/(standard|metric|imperial)]
+```
+
 ### Example
 * Return temperature in kelvin unit \
 http://localhost:8000/api/weather/fr/paris \
